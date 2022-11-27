@@ -6,8 +6,6 @@ nginx + php-fpm + mysql + memcached
 
 Здесь и дальше `localhost` может быть изменен на любой домен, который указывается в `.env`, а так же в вашем локальном `.hosts`
 
-Для работы **https** локально требуется установить корневой сертификат ssl, подробней тут: https://cfl.itech-group.ru/pages/viewpage.action?pageId=114886172.
-
 Есть **phpmyadmin** для просмотра БД. http://localhost:8181/
 
 Есть **mailhog** для просмотра почты. http://localhost:8025/
@@ -23,7 +21,7 @@ nginx + php-fpm + mysql + memcached
 
 Клонируем проект
 
-`git clone https://gitlab.zebrains.team/bitrix/docker.git`
+`git clone git@github.com:aleksander9208/ipr_zebrains.git`
 
 Запускаем команду копирования служебных файлов
 
