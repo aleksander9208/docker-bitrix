@@ -86,6 +86,15 @@ services:
       - volume-mkcert:/root/mkcert
       - volume-ca-certificates:/usr/local/share/ca-certificates
 
+  rabbitmq:
+    image: 'rabbitmq:3.10.5-management'
+    container_name: ${COMPOSE_PROJECT_NAME}-rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
 volumes:
   volume-mysql:
   volume-mkcert:
