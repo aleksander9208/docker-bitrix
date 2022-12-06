@@ -71,6 +71,12 @@ dc-console-php: ##php консоль под www-data
 dc-console-php-root: ##php консоль под root
 	docker exec -it --user root ${COMPOSE_PROJECT_NAME}-php bash
 
+dc-ci: ## composer install
+	docker-compose exec php php -d memory_limit=-1 /usr/local/bin/composer install
+
+dc-cu: ## composer update
+	docker-compose exec php php -d memory_limit=-1 /usr/local/bin/composer update --no-plugins
+
 ##
 ##╔                     ╗
 ##║  database commands  ║
