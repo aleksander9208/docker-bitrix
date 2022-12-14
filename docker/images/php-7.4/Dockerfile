@@ -21,16 +21,22 @@ RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libxml2-dev \
         libmemcached-dev \
+        librabbitmq-dev \
+        libssh-dev \
         && docker-php-ext-install opcache \
         && docker-php-ext-install zip \
         && docker-php-ext-install soap \
         && docker-php-ext-install pdo \
         && docker-php-ext-install pdo_mysql \
         && docker-php-ext-install mysqli \
+        && docker-php-ext-install sockets \
         && pecl install memcached-3.1.5 && docker-php-ext-enable memcached \
         && pecl install memcache-4.0.5.2 && docker-php-ext-enable memcache \
         && pecl install xdebug && docker-php-ext-enable xdebug \
-        && apt-get clean && rm -rf /var/lib/apt/lists/*
+        && apt-get clean && rm -rf /var/lib/apt/lists/* \
+        && pecl install amqp-1.11.0 \
+        && rm -rf /tmp/pear \
+        && docker-php-ext-enable amqp
 
 RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp; \
         docker-php-ext-install -j$(nproc) gd
