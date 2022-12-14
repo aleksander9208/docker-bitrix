@@ -1,18 +1,18 @@
 {
   "config": {
     "platform": {
-      "php": "7.4"
+      "php": "7.4.3"
     },
     "allow-plugins": {
       "composer/installers": true
     }
   },
   "require": {
-    "andreyryabin/sprint.migration": "^4.0",
-    "andreyryabin/sprint.options": "^1.0",
+    "andreyryabin/sprint.migration": "4.2.1",
     "guzzlehttp/guzzle": "7.0",
     "ext-json": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "yngc0der/bitrix-rabbitmq": " v0.1.0"
   },
   "require-dev": {
     "phpunit/phpunit": "9.5.*",
@@ -21,13 +21,14 @@
   "extra": {
     "installer-paths": {
       "local/modules/{$name}/": [
+        "type:bitrix-d7-module",
         "type:bitrix-module"
       ]
     }
   },
   "autoload": {
     "psr-4": {
-      "Lepr\\": "lib/"
+      "Lepr\\": "local/lib/"
     }
   }
 }

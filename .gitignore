@@ -4,7 +4,7 @@
 .vscode
 .history
 
-*.DS_Store
+.DS_Store
 
 /docker/dumps/*
 !/docker/dumps/.gitkeep
@@ -12,10 +12,9 @@
 /docker/bash_history/*
 !/docker/bash_history/.gitkeep
 
-www/upload/*
-www/bitrix/*
-www/local/modules/sprint.migration
-www/local/modules/sprint.options
-www/vendor/*
-www/auth.php
-www/test.php
+/www/upload/
+/www/bitrix/
+/www/local/modules/sprint.migration
+/www/vendor/
+/www/auth.php
+/www/test.php
