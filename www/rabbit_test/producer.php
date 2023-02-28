@@ -13,6 +13,6 @@ $msg = [
 
 $producer = ServiceLocator::getInstance()
     ->get('rabbitmq.rabbit_test_producer');
-$producer->publish(serialize($msg));
+$producer->publish(json_encode($msg));
 
 echo "Сообщение отправлено";

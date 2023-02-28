@@ -1,4 +1,7 @@
-[submodule "www/bitrix"]
-	path = www/bitrix
-	url = git@github.com:aleksander9208/ipr_zebrains.git
-	branch = bitrix
+[submodule "laptop.shop"]
+	path = www/local/modules/laptop.shop
+	url = git@github.com:aleksander9208/laptop.shop.git
+[submodule "bitrix"]
+    path = www/bitrix
+    url = git@github.com:aleksander9208/ipr.git
+    branch = bitrix
