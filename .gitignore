@@ -13,9 +13,7 @@
 !/docker/bash_history/.gitkeep
 
 www/upload/
-www/bitrix/
 www/local/modules/sprint.migration
-www/local/modules/laptop.shop
 www/vendor/
 www/auth.php
 www/test.php

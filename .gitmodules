@@ -1,7 +1,7 @@
-[submodule "laptop.shop"]
-	path = www/local/modules/laptop.shop
-	url = git@github.com:aleksander9208/laptop.shop.git
-[submodule "bitrix"]
+[submodule "www/bitrix"]
     path = www/bitrix
     url = git@github.com:aleksander9208/ipr.git
     branch = bitrix
+[submodule "www/local/modules/laptop.shop"]
+	path = www/local/modules/laptop.shop
+	url = git@github.com:aleksander9208/laptop.shop.git
