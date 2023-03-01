@@ -12,7 +12,10 @@
     "guzzlehttp/guzzle": "7.0",
     "ext-json": "*",
     "ext-curl": "*",
-    "yngc0der/bitrix-rabbitmq": " v0.1.0"
+    "yngc0der/bitrix-rabbitmq": " v0.1.0",
+    "prettybx/support": "dev-master",
+    "php-ews/php-ews": "1.0.0",
+    "aminelch/gravatar": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "9.5.*",

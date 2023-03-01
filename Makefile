@@ -17,11 +17,12 @@ help: ##Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 copyinitdata: ## Копирует файлы по директориям из initdata
-	cp .env-exeplame .env
+	cp .env.example .env
 	cp -r ./docker/initdata/bash_history/* ./docker/bash_history/
-	cp ./docker/initdata/bitrixsetup.php ./www/bitrixsetup.php
-	cp ./docker/initdata/restore.php ./www/restore.php
-	
+	cp ./www/bitrix/.settings.php.example ./www/bitrix/.settings.php
+	cp ./www/bitrix/.settings_extra.php.example ./www/bitrix/.settings_extra.php
+	cp ./www/bitrix/php_interface/dbconn.php.example ./www/bitrix/php_interface/dbconn.php
+
 setupclear: ## Очищаем мусор после установки битрикса
 	@$(MAKE) rmgit
 	@$(MAKE) rmbitrix
