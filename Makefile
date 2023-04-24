@@ -19,9 +19,27 @@ help: ##Show this help.
 copyinitdata: ## Копирует файлы по директориям из initdata
 	cp .env.example .env
 	cp -r ./docker/initdata/bash_history/* ./docker/bash_history/
-	cp ./www/bitrix/.settings.php.example ./www/bitrix/.settings.php
-	cp ./www/bitrix/.settings_extra.php.example ./www/bitrix/.settings_extra.php
-	cp ./www/bitrix/php_interface/dbconn.php.example ./www/bitrix/php_interface/dbconn.php
+	@$(MAKE) copybitrixsetup
+	@$(MAKE) copyrestore
+
+copybitrixsetup:
+	@if wget --spider http://www.1c-bitrix.ru/download/scripts/bitrixsetup.php 2>/dev/null; then \
+	  wget http://www.1c-bitrix.ru/download/scripts/bitrixsetup.php -O ./www/bitrixsetup.php; \
+	else \
+	  cp ./docker/initdata/bitrixsetup.php ./www/bitrixsetup.php; \
+	fi
+
+copyrestore:
+	@if wget --spider http://www.1c-bitrix.ru/download/scripts/restore.php 2>/dev/null; then \
+	  wget http://www.1c-bitrix.ru/download/scripts/restore.php -O ./www/restore.php; \
+	else \
+	  cp ./docker/initdata/restore.php ./www/restore.php; \
+	fi
+
+clearlogs: #Удаляем старые логи: cron, nginx, php
+	docker exec -it ${COMPOSE_PROJECT_NAME}-cron sh -c "rm -f /var/log/cron/cron_events.log" && \
+	docker exec -it ${COMPOSE_PROJECT_NAME}-nginx sh -c "rm -f /var/log/nginx/error.log" && \
+	docker exec -it --user root ${COMPOSE_PROJECT_NAME}-php bash -c "chmod -R 0777 /var/log/php && find /var/log/php/ -exec rm -f {} \;"
 
 setupclear: ## Очищаем мусор после установки битрикса
 	@$(MAKE) rmgit
@@ -49,10 +67,16 @@ sertadd: #Обновим общесистемный список доверен�
 dc-ps: ## Список запущенных контейнеров.
 	docker-compose ps
 
+dc-build: ## Сборка образа php и cron в нужном порядке
+	docker-compose build php
+	docker-compose build cron
+
 dc-up: ## Создаем(если нет) образы и контейнеры, запускаем контейнеры.
 	docker-compose up -d
+	@$(MAKE) clearlogs
 	@$(MAKE) sethost
 	@$(MAKE) sertadd
+	@$(MAKE) gh-check
 
 dc-stop: ## Останавливает контейнеры.
 	docker-compose stop
@@ -72,12 +96,6 @@ dc-console-php: ##php консоль под www-data
 dc-console-php-root: ##php консоль под root
 	docker exec -it --user root ${COMPOSE_PROJECT_NAME}-php bash
 
-dc-ci: ## composer install
-	docker-compose exec php php -d memory_limit=-1 /usr/local/bin/composer install
-
-dc-cu: ## composer update
-	docker-compose exec php php -d memory_limit=-1 /usr/local/bin/composer update --no-plugins
-
 ##
 ##╔                     ╗
 ##║  database commands  ║
@@ -92,4 +110,16 @@ db-dump: ## Сделать дамп БД
 db-restore: ## Восстановить данные в БД. Параметр path - путь до дампа. Пример: make db-restore path=./docker/dumps/2021-11-12_185741_dump.sql.gz
 	gunzip < $(path) | docker exec -i ${COMPOSE_PROJECT_NAME}-mysql mysql -u $(MYSQL_USER) --password=$(MYSQL_PASSWORD) $(MYSQL_DATABASE)
 
+gh-check: # Проверка git hooks
+	@if [ ! -f .git/hooks/commit-msg ] \
+	 || [ ! -f .git/hooks/pre-commit ] \
+	 || [ ! -f .git/hooks/prepare-commit-msg ] \
+	; then \
+		echo "$$(tput setaf 1)\nХуки не установлены!\n$$(tput setaf 0)Выполните команду:\n\n $$(tput setaf 2)make gh \n"; \
+	fi
 
+gh: # Инициализация git hooks
+	@cd .git/hooks && \
+	ln -sf ../../docker/hooks/commit-msg commit-msg && \
+	ln -sf ../../docker/hooks/pre-commit pre-commit && \
+	ln -sf ../../docker/hooks/prepare-commit-msg prepare-commit-msg
