@@ -6,6 +6,8 @@ nginx + php-fpm + mysql + memcached
 
 Здесь и дальше `localhost` может быть изменен на любой домен, который указывается в `.env`, а так же в вашем локальном `.hosts`
 
+Для работы **https** локально требуется установить корневой сертификат ssl.
+
 Есть **phpmyadmin** для просмотра БД. http://localhost:8181/
 
 Есть **mailhog** для просмотра почты. http://localhost:8025/
@@ -13,15 +15,11 @@ nginx + php-fpm + mysql + memcached
 
 ## Поддерживаются в любом сочетании:
 
-**PHP:** 7.4, 8.0
+**PHP:** 7.2, 7.3, 7.4, 8.0, 8.1
 
 **MySql:** 5.7, 8
 
 ## Установка
-
-Клонируем проект
-
-`git clone git@github.com:aleksander9208/ipr_zebrains.git`
 
 Запускаем команду копирования служебных файлов
 
@@ -31,8 +29,9 @@ nginx + php-fpm + mysql + memcached
 
 `NGINX_HOST` должен совпадать с настройками Главного модуля, "URL сайта (без http://, например www.mysite.com)". При запуске одновременно нескольких проектов, порты на контейнеры должны отличаться.
 
-Запускаем docker
-`make dc-up`
+Перед первым запуском сделать `make dc-build`
+
+Запускаем docker `make dc-up`
 
 Рекомендуется всегда пользоваться командами `make dc-up` и `make dc-down` для запуска и остановки проекта в docker.
 В `make dc-up` происходит установка домена и ip nginx в файл `.hosts` контейнера php.
@@ -47,6 +46,10 @@ nginx + php-fpm + mysql + memcached
 
 > `make setupclear` - Подразумевается использование: под каждый проект - свой git.
 
+Внимание: 
+ - Для корректной сборки cron образа Docker Compose должен быть больше 2 версии. Проверялось на v2.15.1.
+ - Работа в windows только в wsl2.
+
 ## Структура проекта
 ```bash
 -- docker
@@ -54,9 +57,9 @@ nginx + php-fpm + mysql + memcached
     -- conf # конфиги. ngnix и пр.
     -- dumps # папка для дампов БД
     -- images # папка с docker образами
-    -- initdata # папка с служебными файлами
--- www # root дериктория проекта
--- .env-exeplame # пример файла `.env`
+    -- initdata # папка со служебными файлами
+-- www # root директория проекта
+-- .env.example # пример файла `.env`
 -- .gitignore # список игнора
 -- Makefile # команды make. Список команд make можно посмотреть так: `make` или `make help`
 -- docker-compose.yml # конфиг контейнеров
@@ -82,6 +85,11 @@ return [
 ];
 ````
 Подробней в https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=14026&LESSON_PATH=3913.3435.4816.14028.14026
+
+## Настройки для портала Битрикс24
+
+1. Перед сборкой и запуском проекта в .env раскомментировать переменную COMPOSE_PROFILES, проверить, что ее значение равно "portal"
+2. Для корректной работы Push&Pull в админ. панели в настройках модуля (bitrix/admin/settings.php?mid=pull&lang=ru) указать "Путь для публикации команд", равным http://push-server-pub:9010/bitrix/pub/ . Либо сделать аналогичные настройки в /bitrix/.setting.php, подробней: https://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=41&LESSON_ID=2033
 
 ## TODO List
 - Sphinx в отдельном контейнере.

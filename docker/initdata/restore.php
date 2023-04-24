@@ -206,7 +206,7 @@ elseif (LANG == 'de')
 		<li>Öffnen Sie den Administrativen Bereich Ihrer alten Website und wählen Sie <b>Einstellungen &gt; Tools &gt; Backup</b>
 		<li>Erstellen Sie ein vollständiges Archiv mit <b>öffentlichen Website-Dateien</b>, <b>Kernel-Dateien</b> und <b>Datenbank-Dump</b>
 		</ul>
-		<b>Dokumentation:</b> <a href='https://training.bitrix24.com/support/training/course/?COURSE_ID=12&LESSON_ID=5913&LESSON_PATH=3884.5489.5913' target='_blank'>Trainingskurs</a>
+		<b>Dokumentation:</b> <a href='https://training.bitrix24.com/support/training/course/?COURSE_ID=58&LESSON_ID=5913' target='_blank'>Trainingskurs</a>
 		</p>
 		",
 		"ARC_DOWN" => "Von Remote-Server herunterladen",
@@ -313,7 +313,7 @@ else
 		<li>Open Control Panel section of your old site and select <b>Settings &gt; Tools &gt; Backup</b>
 		<li>Create full archive which contains <b>public site files</b>, <b>kernel files</b> and <b>database dump</b>
 		</ul>
-		<b>Documentation:</b> <a href='https://training.bitrix24.com/support/training/course/?COURSE_ID=12&LESSON_ID=5913&LESSON_PATH=3884.5489.5913' target='_blank'>learning course</a>
+		<b>Documentation:</b> <a href='https://training.bitrix24.com/support/training/course/?COURSE_ID=58&LESSON_ID=5913' target='_blank'>learning course</a>
 		</p>
 		",
 		"ARC_DOWN" => "Download from remote server",
@@ -419,11 +419,28 @@ $bCloudDownloadStep = ($_REQUEST['cloud_download'] ?? '');
 
 $Step = intval($_REQUEST["Step"] ?? 0);
 
+
+if(LANG == 'ru')
+{
+	$bx_host = 'www.1c-bitrix.ru';
+	$util_host = 'util.1c-bitrix.ru';
+}
+elseif(LANG == 'de')
+{
+	$bx_host = 'www.bitrix.de';
+	$util_host = 'util.bitrixsoft.com';
+}
+else
+{
+	$bx_host = 'www.bitrixsoft.com';
+	$util_host = 'util.bitrixsoft.com';	
+}
+
 $strErrMsg = '';
 if (!DEBUG && !$Step && $_SERVER['REQUEST_METHOD'] == 'GET')
 {
 	$this_script_name = basename(__FILE__);
-	$bx_host = 'www.1c-bitrix.ru';
+
 	$bx_url = '/download/files/scripts/'.$this_script_name;
 	$form = '';
 
@@ -497,7 +514,7 @@ if (!DEBUG)
 if (isset($_REQUEST['LoadFileList']) && $_REQUEST['LoadFileList'])
 {
 	$strLog = '';
-	if (LoadFile("https://www.1c-bitrix.ru/buy_tmp/backup.php?license=".md5(trim($_REQUEST['license_key']))."&lang=".LANG."&action=get_info", $file = $_SERVER['DOCUMENT_ROOT'].'/file_list.xml') && ($str = file_get_contents($file)))
+	if (LoadFile("https://".$util_host."/backup.php?license=".md5(trim($_REQUEST['license_key']))."&lang=".LANG."&action=get_info", $file = $_SERVER['DOCUMENT_ROOT'].'/file_list.xml') && ($str = file_get_contents($file)))
 	{
 		if (preg_match_all('/<file name="([^"]+)" size="([^"]+)".*?\\/>/', $str, $regs))
 		{
@@ -550,7 +567,7 @@ elseif ($Step == 2 && !$bSelectDumpStep)
 	if ($source == 'bitrixcloud' && !$_REQUEST['arc_down_url'])
 	{
 		$strLog = '';
-		if (LoadFile('https://www.1c-bitrix.ru/buy_tmp/backup.php?license='.md5(trim($_REQUEST['license_key'])).'&lang='.LANG.'&action=read_file&file_name='.urlencode($_REQUEST['bitrixcloud_backup']).'&check_word='.CTar::getCheckword($_REQUEST['EncryptKey']), $file = $_SERVER['DOCUMENT_ROOT'].'/file_info.xml') && ($str = file_get_contents($file)))
+		if (LoadFile('https://'.$util_host.'/backup.php?license='.md5(trim($_REQUEST['license_key'])).'&lang='.LANG.'&action=read_file&file_name='.urlencode($_REQUEST['bitrixcloud_backup']).'&check_word='.CTar::getCheckword($_REQUEST['EncryptKey']), $file = $_SERVER['DOCUMENT_ROOT'].'/file_info.xml') && ($str = file_get_contents($file)))
 		{
 			bx_unlink($file);
 
@@ -2431,7 +2448,7 @@ function html($ar)
 			<input type="hidden" name="Step">
 
 			<header class="header">
-				<?if ($isCrm):?>
+				<?if ($isCrm || LANG != 'ru'):?>
 					<a href="" target="_blank" class="logo-link"><span class="logo <?=LANG?>"></span></a>
 				<?else:?>
 					<a href="" target="_blank" class="buslogo-link"><span class="buslogo <?=LANG?>"></span></a>
@@ -2475,7 +2492,11 @@ function html($ar)
 							<label for="ss"><span class="selected-lang lang <?=LANG?>"></span></label>
 							<div class="select-popup" id="lang-popup">
 								<?
-								foreach(array('en','de','ru') as $l)
+								$langs = array('en','de');
+								if(LANG == 'ru')
+									$langs = array('en','de','ru');
+								
+								foreach($langs as $l)
 								{
 									?>
 									<div class="select-lang-item">
@@ -3402,7 +3423,10 @@ function img($name)
 {
 	if (file_exists($_SERVER['DOCUMENT_ROOT'].'/images/'.$name))
 		return '/images/'.$name;
-	return 'https://www.1c-bitrix.ru/images/bitrix_setup/'.$name;
+	if(LANG == 'ru')
+		return 'https://www.1c-bitrix.ru/images/bitrix_setup/'.$name;
+	else
+		return 'https://www.bitrixsoft.com/images/bitrix_setup/'.$name;
 }
 
 function bx_accelerator_reset()

@@ -1,4 +1,4 @@
-FROM php:8.0-fpm
+FROM php:8.1-fpm
 
 # нужные пакеты
 RUN apt-get update && apt-get install -y \
@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y \
         && docker-php-ext-install mysqli \
         && pecl install memcached-3.2.0 && docker-php-ext-enable memcached \
         && pecl install memcache-8.0 && docker-php-ext-enable memcache \
-        && pecl install xdebug && docker-php-ext-enable xdebug \
+        && pecl install xdebug-3.2.0 && docker-php-ext-enable xdebug \
         && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp; \
         docker-php-ext-install -j$(nproc) gd \
         && apt-get clean && rm -rf /var/lib/apt/lists/*

@@ -8,9 +8,9 @@ RUN apt-get update && apt-get install -y \
         curl \
         pkg-config \
         nmap \
-        cron \
         htop \
-        git 
+        git \
+        git-lfs
 
 # пакеты для PHP расширений
 RUN apt-get update && apt-get install -y \
@@ -21,28 +21,31 @@ RUN apt-get update && apt-get install -y \
         libfreetype6-dev \
         libxml2-dev \
         libmemcached-dev \
-        librabbitmq-dev \
-        libssh-dev \
         && docker-php-ext-install opcache \
         && docker-php-ext-install zip \
         && docker-php-ext-install soap \
         && docker-php-ext-install pdo \
         && docker-php-ext-install pdo_mysql \
         && docker-php-ext-install mysqli \
-        && docker-php-ext-install sockets \
         && pecl install memcached-3.1.5 && docker-php-ext-enable memcached \
         && pecl install memcache-4.0.5.2 && docker-php-ext-enable memcache \
-        && pecl install xdebug && docker-php-ext-enable xdebug \
-        && apt-get clean && rm -rf /var/lib/apt/lists/* \
-        && pecl install amqp-1.11.0 \
-        && rm -rf /tmp/pear \
-        && docker-php-ext-enable amqp
+        && pecl install xdebug-3.1.6 && docker-php-ext-enable xdebug \
+        && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp; \
+        docker-php-ext-install -j$(nproc) gd \
+        && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp; \
-        docker-php-ext-install -j$(nproc) gd
+# Если образ для портала
+ARG COMPOSE_PROFILES
+RUN if [ "$COMPOSE_PROFILES" = "portal" ]; then \
+        apt-get update && apt-get install -y \
+        libldap2-dev \
+        && docker-php-ext-configure ldap --with-libdir=lib/$(uname -m)-linux-gnu/ \
+        && docker-php-ext-install ldap \
+        && apt-get clean && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 # Настройки почтовика
-RUN if [ $(shell uname -m) = "x86_64" ]; then \
+RUN if [ $(uname -m) = "x86_64" ]; then \
         curl -Lsf 'https://storage.googleapis.com/golang/go1.17.4.linux-amd64.tar.gz' | tar -C '/usr/local' -xvzf -; \
     else \
         curl -Lsf 'https://storage.googleapis.com/golang/go1.17.4.linux-arm64.tar.gz' | tar -C '/usr/local' -xvzf -; \
