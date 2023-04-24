@@ -96,6 +96,31 @@ services:
       RABBITMQ_DEFAULT_USER: "rabbitmq"
       RABBITMQ_DEFAULT_PASS: "rabbitmq"
 
+  redis:
+    image: redis:7
+    container_name: ${COMPOSE_PROJECT_NAME}-redis-db
+    restart: unless-stopped
+    volumes:
+      - ./redis/data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - '${REDIS_HOST}:${REDIS_HOST}'
+    command: redis-server
+
+  push-server-pub:
+    image: ikarpovich/bitrix-push-server
+    container_name: ${COMPOSE_PROJECT_NAME}-push-server
+    links:
+      - redis
+    networks:
+      - default
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - LISTEN_HOSTNAME=${LISTEN_HOSTNAME}
+      - LISTEN_PORT=${NGINX_PORT}
+      - SECURITY_KEY=${SECURITY_KEY}
+      - MODE=${MODE}
+
 volumes:
   volume-mysql:
   volume-mkcert:
