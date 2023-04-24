@@ -18,3 +18,4 @@ www/local/modules/sprint.migration
 www/vendor/
 www/auth.php
 www/test.php
+www/local/templates/
