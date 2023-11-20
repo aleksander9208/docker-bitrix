@@ -34,11 +34,6 @@ RUN apt-get update && apt-get install -y \
         docker-php-ext-install -j$(nproc) gd \
         && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# DEPENDENCIES
-RUN apt-get update --fix-missing \
-    && apt-get install -y python3 \
-    && rm -rf /var/lib/apt/lists/* \
-
 # KAFKA
 RUN git clone --depth 1 https://github.com/edenhill/librdkafka.git \
     && ( \
